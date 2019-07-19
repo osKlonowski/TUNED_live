@@ -13,7 +13,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUpPage> {
-  String _email, _password;
+  String _email, _password, _name;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -24,6 +24,14 @@ class _SignUpState extends State<SignUpPage> {
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Email",
+          border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+    );
+    final nameField = TextFormField(
+      onSaved: (input) => _name = input,
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Full Name",
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
@@ -68,7 +76,9 @@ class _SignUpState extends State<SignUpPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(height: 40.0),
+                SizedBox(height: 30.0),
+                nameField,
+                SizedBox(height: 25.0),
                 emailField,
                 SizedBox(height: 25.0),
                 passwordField,
@@ -101,7 +111,7 @@ class _SignUpState extends State<SignUpPage> {
       formState.save();
       try {
         FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password).then((user) {
-          UserManagement().storeNewUser(user, context);
+          UserManagement().storeNewUser(user, context, _name);
         }).catchError((e) {
           print(e.message);
         });

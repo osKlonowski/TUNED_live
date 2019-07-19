@@ -17,8 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _userName = null; //PASS USER NAME TO DRAWER
-  String _userEmail = null; //PASS USER EMAIL TO DRAWER
+  //String _userName; //PASS USER NAME TO DRAWER
+  String _userEmail; //PASS USER EMAIL TO DRAWER
 
   Future<void> getUserInfo() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();

@@ -134,7 +134,9 @@ class TunedBodyBuilder extends State<TunedBody> {
                     case ConnectionState.waiting:
                       return new Center(child: new CircularProgressIndicator());
                     default:
-                      return new ListView.builder(
+                      return new ListView.separated(
+                        separatorBuilder: (
+                          BuildContext context, int index) => const Divider(),
                         itemCount: snapshot.data.documents.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data.documents[index];
