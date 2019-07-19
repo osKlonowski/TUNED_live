@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "976446532802",
+    "firebase_url": "https://tunedlive-2f409.firebaseio.com",
+    "project_id": "tunedlive-2f409",
+    "storage_bucket": "tunedlive-2f409.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:976446532802:android:55c3a45350c2a2df",
+        "android_client_info": {
+          "package_name": "com.tuned.tunedlive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "976446532802-p0hq9pl8lgd60p0jtq305ncj8a55sfm5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tuned.tunedlive",
+            "certificate_hash": "56f5e18b5aa61585778e8b3cdf02aebf2fd6cc52"
+          }
+        },
+        {
+          "client_id": "976446532802-2pcstghvjk69a3qvgnrtuq1a2dc9s213.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDodZbHk3H5f1U1TM28nuBeU9DpM_x1uxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "976446532802-2pcstghvjk69a3qvgnrtuq1a2dc9s213.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

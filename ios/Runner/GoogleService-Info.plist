@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>976446532802-cg4qgpih0cnb2eh88cg0nrccsk5uecb7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.976446532802-cg4qgpih0cnb2eh88cg0nrccsk5uecb7</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>976446532802-p0hq9pl8lgd60p0jtq305ncj8a55sfm5.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBhJy7uPgU09T2qq1S09injNlkubbuG4wI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>976446532802</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.tuned.tunedlive</string>
+	<key>PROJECT_ID</key>
+	<string>tunedlive-2f409</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tunedlive-2f409.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:976446532802:ios:55c3a45350c2a2df</string>
+	<key>DATABASE_URL</key>
+	<string>https://tunedlive-2f409.firebaseio.com</string>
+</dict>
+</plist>
