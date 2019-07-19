@@ -17,16 +17,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //String _userName; //PASS USER NAME TO DRAWER
+  String _userName; //PASS USER NAME TO DRAWER
   String _userEmail; //PASS USER EMAIL TO DRAWER
 
   Future<void> getUserInfo() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    DocumentReference emailRef = Firestore.instance.collection('users').document(user.email);
-    //DocumentReference nameRef = Firestore.instance.collection('users').document(user.name);
-    _userEmail = emailRef.toString();
-    print(_userEmail);
-    //_userName = nameRef.toString();
+    DocumentReference ref = Firestore.instance.collection('users').document(user.uid);
+    DocumentReference emailRef = Firestore.instance.collection('users').document('email');
+    DocumentReference nameRef = Firestore.instance.collection('users').document('name');
+    _userEmail = ref.toString();
+    _userName = nameRef.toString();
   }
 
   @override
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      drawer: new DrawerMenu(userName: "Oski Klonoski", userEmail: _userEmail),
+      drawer: new DrawerMenu(userName: _userName, userEmail: _userEmail),
       body: new TunedBody(),
     );
   }

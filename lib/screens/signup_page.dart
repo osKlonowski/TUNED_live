@@ -52,7 +52,7 @@ class _SignUpState extends State<SignUpPage> {
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: signUp,
-        child: Text("Login",
+        child: Text("Sign Up",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),

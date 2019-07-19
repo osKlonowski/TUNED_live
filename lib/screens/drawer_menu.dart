@@ -71,7 +71,7 @@ class _DrawerState extends State<DrawerMenu> {
             trailing: Icon(Icons.arrow_left),
             onTap: () {
               FirebaseAuth.instance.signOut().then((value) {
-                // Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => new WelcomePage()));
               }).catchError((e) {
                 print(e.message);
