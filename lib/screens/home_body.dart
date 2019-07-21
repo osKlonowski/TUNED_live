@@ -7,6 +7,7 @@ import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tuned_live/screens/venue_container.dart';
 //import 'package:geolocator/geolocator.dart';
 //import 'venue_container.dart';
 
@@ -21,6 +22,7 @@ class TunedBodyBuilder extends State<TunedBody> {
   bool _showAlertPermission = true;
   Location location = new Location();
   LocationData currentUserLocation;
+  double globalRadius;
 
   Firestore firestore = Firestore.instance;
   Geoflutterfire geo = Geoflutterfire();
@@ -39,10 +41,12 @@ class TunedBodyBuilder extends State<TunedBody> {
     super.initState();
     PermissionHandler().checkPermissionStatus(PermissionGroup.locationWhenInUse)
     .then(_updateStatus);
+    // getLocationOnce();
     location.onLocationChanged().listen((value) {
-      setState(() {
-        currentUserLocation = value;
-      });
+      //_updateQuery(globalRadius);
+      // setState(() {
+      //   currentUserLocation = value;
+      // });
       mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(value.latitude, value.longitude),
@@ -50,7 +54,7 @@ class TunedBodyBuilder extends State<TunedBody> {
         )
       ));
     });
-    venueQuery();
+    //venueQuery();
   }
 
   GoogleMapController mapController;
@@ -61,7 +65,7 @@ class TunedBodyBuilder extends State<TunedBody> {
     return new Stack(
       children: [
         GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(currentUserLocation.latitude, currentUserLocation.longitude), zoom: 12.0),
+          initialCameraPosition: CameraPosition(target: LatLng(45.645573, -122.657433), zoom: 12.0), 
           onMapCreated: _onMapCreated,
           myLocationEnabled: true, // add a blue dot;
           scrollGesturesEnabled: true,
@@ -84,7 +88,10 @@ class TunedBodyBuilder extends State<TunedBody> {
               label: 'Radius ${radius.value}km',
               activeColor: Colors.green,
               inactiveColor: Colors.green.withOpacity(0.2),
-              onChanged: _updateQuery,
+              onChanged: (value) {
+                globalRadius = value;
+                _updateQuery(value);
+              }
             ),
           ),
         ),
@@ -118,7 +125,7 @@ class TunedBodyBuilder extends State<TunedBody> {
             child: Container(
               height: 250,
               margin: EdgeInsets.all(15.0),
-              padding: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(7.0),
               decoration: BoxDecoration(borderRadius: 
                 BorderRadius.only(
                   topRight: Radius.circular(10.0),
@@ -126,137 +133,9 @@ class TunedBodyBuilder extends State<TunedBody> {
                   bottomLeft: Radius.circular(10.0), 
                   topLeft: Radius.circular(10.0)), 
                   color: Colors.white),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection('venues').snapshots(),
-                builder: (BuildContext context, 
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return new Center(child: new CircularProgressIndicator());
-                    default:
-                      return new ListView.separated(
-                        separatorBuilder: (
-                          BuildContext context, int index) => const Divider(),
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds = snapshot.data.documents[index];
-                          return Container(
-                            height: 100,
-                            decoration: 
-                              BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0), 
-                                color: new Color(0xFF151026)
-                              ),
-                            padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child:
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                              new InkWell(
-                                onTap: () {
-                                  //Navigator.of(context).pop;
-                                  print("Play Music!");
-                                },
-                                child: Padding(
-                                    padding: EdgeInsets.all(2.0),
-                                    child: const Icon(Icons.play_circle_filled, color: Colors.white, size: 45.0)
-                                    )
-                              ),
-                              new Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  new Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(ds['venueName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                    ]
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-                                      Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-                                      Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-                                      Icon(Icons.star, size: 22.0, color: Colors.white),
-                                      Icon(Icons.star, size: 22.0, color: Colors.white),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Text('${ds['venueName']}m', style: TextStyle(color: Colors.white)),
-                              ],
-                            ),
-                          );
-                        }
-                      );
-                    }
-                },
-              ),
+              child: VenueContainer(),
             ),
           ),
-          // child: new StreamBuilder<QuerySnapshot>(
-          //   stream: Firestore.instance.collection('venues').snapshots(),
-          //   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //     if (snapshot.hasError)
-          //       return new Text('Error: ${snapshot.error}');
-          //     switch (snapshot.connectionState) {
-          //       case ConnectionState.waiting: return new CircularProgressIndicator();
-          //       default:
-          //         //return VenueContainer();
-          //         return new ListView(
-          //           children: snapshot.data.documents.map((DocumentSnapshot document) {
-          //             return new Container(
-          //               height: 100,
-          //               decoration: 
-          //                 BoxDecoration(
-          //                   borderRadius: BorderRadius.circular(10.0), 
-          //                   color: new Color(0xFF151026)
-          //                 ),
-          //               padding: EdgeInsets.only(left: 10.0, right: 10.0),
-          //               child:       
-          //               Row(
-          //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //                 children: [
-          //                 new InkWell(
-          //                   onTap: () {
-          //                     //Navigator.of(context).pop;
-          //                     print("Play Music!");
-          //                   },
-          //                   child: Padding(
-          //                       padding: EdgeInsets.all(2.0),
-          //                       child: const Icon(Icons.play_circle_filled, color: Colors.white, size: 45.0)
-          //                       )
-          //                 ),
-          //                 new Column(
-          //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                   children: [
-          //                     new Row(
-          //                       mainAxisAlignment: MainAxisAlignment.center,
-          //                       children: [
-          //                         Text('${document.data['venueName']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          //                       ]
-          //                     ),
-          //                     Row(
-          //                       mainAxisSize: MainAxisSize.min,
-          //                       children: [
-          //                         Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-          //                         Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-          //                         Icon(Icons.star, size: 22.0, color: Colors.greenAccent[400]),
-          //                         Icon(Icons.star, size: 22.0, color: Colors.white),
-          //                         Icon(Icons.star, size: 22.0, color: Colors.white),
-          //                       ],
-          //                     ),
-          //                   ],
-          //                 ),
-          //                 Text('250m', style: TextStyle(color: Colors.white)),
-          //                 ],
-          //               ),
-          //             );
-          //           }).toList(),
-          //         );
-          //     }
-          //   },
-          // ),
         ),
       ],
     );
@@ -280,13 +159,18 @@ class TunedBodyBuilder extends State<TunedBody> {
         }));
   }
 
+  double distanceCalc(DocumentSnapshot document) {
+    return document.data['distance'];
+  }
+
   void _updateMarkers(List<DocumentSnapshot> documentList){
-    print(documentList);
     markers.clear();
     documentList.forEach((DocumentSnapshot document) {
       GeoPoint pos = document.data['position']['geopoint'];
       double distance = document.data['distance'];
       String name = document.data['venueName'];
+
+      Firestore.instance.collection('venues').document(document.documentID).updateData({'distance': distance});
 
       var markerId = MarkerId(LatLng(pos.latitude, pos.longitude).toString());
 
@@ -308,19 +192,6 @@ class TunedBodyBuilder extends State<TunedBody> {
       setState(() {
         markers[markerId] = marker;
       });
-
-      // setState(() {
-      //   _markers.add(Marker(
-      //     markerId: MarkerId(LatLng(pos.latitude, pos.longitude).toString()),
-      //     position: LatLng(pos.latitude, pos.longitude),
-      //     infoWindow: InfoWindow(
-      //       title: '${document.data['venueName']}',
-      //       snippet: '$distance kilometers from you',
-      //       onTap: () => print('Clicked the marker description.'),
-      //     ),
-      //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-      //   ));
-      // });
     });
   }
 
@@ -357,7 +228,6 @@ class TunedBodyBuilder extends State<TunedBody> {
     setState(() {
       radius.add(value);
     });
-
   }
 
   void _showDialog() {
@@ -389,7 +259,6 @@ class TunedBodyBuilder extends State<TunedBody> {
     setState(() {
       mapController = controller;
     });
-    //_animateToUser();
   }
 
   void _updateStatus(PermissionStatus status) {
