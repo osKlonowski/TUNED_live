@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+import 'venue_view.dart';
 
 class VenueContainer extends StatefulWidget {
   // final QuerySnapshot snapshot;
@@ -44,9 +47,10 @@ class _VenueContainerState extends State<VenueContainer> {
                         flex: 2,
                         child: new InkWell(
                           onTap: () {
-                            print("Play Music!");
+                            Navigator.of(context).pop();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => VenueView()));
                           },
-                          child: Padding(
+                          child: Padding(   
                               padding: EdgeInsets.all(2.0),
                               child: const Icon(Icons.play_circle_filled, color: Colors.white, size: 55.0)
                               )

@@ -16,6 +16,7 @@ class _LoginState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     final emailField = TextFormField(
       obscureText: false,
       onSaved: (input) => _email = input,
@@ -25,6 +26,7 @@ class _LoginState extends State<LoginPage> {
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
+
     final passwordField = TextFormField(
       obscureText: true,
       onSaved: (input) => _password = input,
@@ -34,6 +36,7 @@ class _LoginState extends State<LoginPage> {
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
+
     final loginButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(30.0),
@@ -60,7 +63,7 @@ class _LoginState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 120.0,
+                  height: 50.0,
                   child: Image.asset(
                     "./lib/assets/image_logo.png",
                     fit: BoxFit.contain,
@@ -86,8 +89,7 @@ class _LoginState extends State<LoginPage> {
                 FlatButton(
                   child: Text('Don\'t have an account yet? Sign Up', style: TextStyle(color: Colors.blue[400])),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                    Navigator.popAndPushNamed(context, '/signUpScreen');
                   },
                 ),
               ],
@@ -100,12 +102,12 @@ class _LoginState extends State<LoginPage> {
 
   Future<void> signIn() async {
     final formState = _formKey.currentState;
-    //Validate fields
+    //Validate fields => if they're empty, show an alertDialog to fill up the fields.
     if(formState.validate()){
       formState.save();
       try {
         FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password).then((FirebaseUser user) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+          Navigator.popAndPushNamed(context, '/homeScreen'); //Handle empty fields
         }).catchError((e) {
           print(e.message);
         });

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:tuned_live/main.dart';
 import 'login_page.dart';
 import 'signup_page.dart';
 
@@ -56,11 +56,11 @@ class _WelcomeState extends State<WelcomePage> {
   }
 
   void navigateToLogin() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(), fullscreenDialog: true));
+    Navigator.popAndPushNamed(context, '/loginScreen');
   }
 
   void navigateToSignUp() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage(), fullscreenDialog: true));
+    Navigator.popAndPushNamed(context, '/signUpScreen');
   }
 
 }

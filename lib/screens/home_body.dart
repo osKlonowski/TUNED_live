@@ -22,7 +22,6 @@ class TunedBodyBuilder extends State<TunedBody> {
   bool _showAlertPermission = true;
   Location location = new Location();
   LocationData currentUserLocation;
-  double globalRadius;
 
   Firestore firestore = Firestore.instance;
   Geoflutterfire geo = Geoflutterfire();
@@ -41,19 +40,14 @@ class TunedBodyBuilder extends State<TunedBody> {
     super.initState();
     PermissionHandler().checkPermissionStatus(PermissionGroup.locationWhenInUse)
     .then(_updateStatus);
-    // getLocationOnce();
-    location.onLocationChanged().listen((value) {
-      //_updateQuery(globalRadius);
-      // setState(() {
-      //   currentUserLocation = value;
-      // });
-      mapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(value.latitude, value.longitude),
-          zoom: 12.0
-        )
-      ));
-    });
+    // location.onLocationChanged().listen((value) {
+    //   mapController.animateCamera(CameraUpdate.newCameraPosition(
+    //     CameraPosition(
+    //       target: LatLng(value.latitude, value.longitude),
+    //       zoom: 12.0
+    //     )
+    //   )); //FIX THIS!!!
+    // });
     //venueQuery();
   }
 
@@ -88,10 +82,7 @@ class TunedBodyBuilder extends State<TunedBody> {
               label: 'Radius ${radius.value}km',
               activeColor: Colors.green,
               inactiveColor: Colors.green.withOpacity(0.2),
-              onChanged: (value) {
-                globalRadius = value;
-                _updateQuery(value);
-              }
+              onChanged: _updateQuery,
             ),
           ),
         ),
@@ -159,10 +150,6 @@ class TunedBodyBuilder extends State<TunedBody> {
         }));
   }
 
-  double distanceCalc(DocumentSnapshot document) {
-    return document.data['distance'];
-  }
-
   void _updateMarkers(List<DocumentSnapshot> documentList){
     markers.clear();
     documentList.forEach((DocumentSnapshot document) {
@@ -170,7 +157,7 @@ class TunedBodyBuilder extends State<TunedBody> {
       double distance = document.data['distance'];
       String name = document.data['venueName'];
 
-      Firestore.instance.collection('venues').document(document.documentID).updateData({'distance': distance});
+      Firestore.instance.collection('venues').document(document.documentID).updateData({'distance': distance.toStringAsFixed(2)});
 
       var markerId = MarkerId(LatLng(pos.latitude, pos.longitude).toString());
 
@@ -182,7 +169,7 @@ class TunedBodyBuilder extends State<TunedBody> {
         ),
         infoWindow: InfoWindow(
           title: name,
-          snippet: '$distance kilometers from you'
+          snippet: '$distance km from you.'
         ),
         onTap: () {
           print("Hello World!");

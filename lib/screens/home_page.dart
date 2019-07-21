@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      drawer: new DrawerMenu(userName: _userName, userEmail: _userEmail),
+      drawer: new DrawerMenu(userName: "_userName", userEmail: "_userEmail"), //Pass real values
       body: new TunedBody(),
     );
   }

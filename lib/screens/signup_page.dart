@@ -92,8 +92,7 @@ class _SignUpState extends State<SignUpPage> {
                 FlatButton(
                   child: Text('Already have an account? Sign In', style: TextStyle(color: Colors.black54)),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.popAndPushNamed(context, '/loginScreen');
                   },
                 ),
               ],
@@ -116,7 +115,7 @@ class _SignUpState extends State<SignUpPage> {
           print(e.message);
         });
         //user.sendEmailVerification();
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.popAndPushNamed(context, '/homeScreen');
       }catch(e) {
         print(e);
       }
