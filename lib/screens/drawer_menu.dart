@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tuned_live/screens/welcome_page.dart';
@@ -6,35 +7,64 @@ import 'home_page.dart';
 //import 'home_page.dart';
 
 class DrawerMenu extends StatefulWidget {
-  final String userName;
-  final String userEmail;
-
-  const DrawerMenu({Key key, @required this.userName, @required this.userEmail}): super(key: key);
-
   @override
-  _DrawerState createState() => _DrawerState(userName, userEmail);
+  _DrawerState createState() => _DrawerState();
 }
 
 class _DrawerState extends State<DrawerMenu> {
-  String userName;
-  String userEmail;
-  _DrawerState(this. userName, this. userEmail);
-  // widget.userName
-  // widget.userEmail
+
+  // Future<QuerySnapshot> getUserInfo() async {
+  //   final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+  //   var uid = user.uid;
+  //   var query = Firestore.instance.collection('fields').where('uid', isEqualTo: uid).snapshots();
+  //   return query.first;
+  // }
+
+  // @override
+  // void initState() {
+  //   getUserInfo().then((result) {
+  //     setState(() {
+        
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return new Drawer(
       child: new ListView(
         children: <Widget>[
-          new UserAccountsDrawerHeader(
-            accountName: new Text("${widget.userName}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
-            accountEmail: new Text("${widget.userEmail}"),
-            currentAccountPicture: new GestureDetector(
-              //onTap: () => print('Something'),
-              child: new CircleAvatar(
-                backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
-              )
+          // new FutureBuilder<QuerySnapshot>(
+          //   future: getUserInfo(),
+          //   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          //     switch (snapshot.connectionState) {
+          //       case ConnectionState.waiting: return new Text('Awaiting result...');
+          //     default:
+          //       var doc = snapshot.data;
+          //       if (snapshot.hasError)
+          //         return new Text('Error: ${snapshot.error}');
+          //       else
+          //         return new UserAccountsDrawerHeader(
+          //           accountName: new Text('${doc["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
+          //           accountEmail: new Text('${doc['email']}'),
+          //           currentAccountPicture: new CircleAvatar(
+          //             backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
+          //           ),
+          //           decoration: new BoxDecoration(
+          //             image: new DecorationImage(
+          //               fit: BoxFit.fill,
+          //               image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
+          //             )
+          //           ),
+          //         );
+          //     }
+          //   },
+          // ),
+          UserAccountsDrawerHeader(
+            accountName: new Text('userName', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
+            accountEmail: new Text('userEmail'),
+            currentAccountPicture: new CircleAvatar(
+              backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
             ),
             decoration: new BoxDecoration(
               image: new DecorationImage(
@@ -71,8 +101,7 @@ class _DrawerState extends State<DrawerMenu> {
             trailing: Icon(Icons.arrow_left),
             onTap: () {
               FirebaseAuth.instance.signOut().then((value) {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => new WelcomePage()));
+                Navigator.popAndPushNamed(context, '/loginScreen');
               }).catchError((e) {
                 print(e.message);
               });
@@ -90,11 +119,6 @@ class _DrawerState extends State<DrawerMenu> {
               ],
             ),
           ),
-          // new ListTile(
-          //   title: new Text('Close'),
-          //   trailing: Icon(Icons.cancel),
-          //   //onTap: () => Navigator.of(context).pop, //Doesn't work right now
-          // ),
         ],
       ),
     );

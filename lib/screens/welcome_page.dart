@@ -16,6 +16,11 @@ class _WelcomeState extends State<WelcomePage> {
       appBar: AppBar(
         title: Text('TUNED LIVE'),
       ),
+      // body: Stack(
+      //   children: <Widget>[
+      //     _buildContainer(),
+      //   ],
+      // ),
       body: Center (
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

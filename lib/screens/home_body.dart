@@ -2,41 +2,39 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuned_live/screens/venue_container.dart';
-//import 'package:geolocator/geolocator.dart';
-//import 'venue_container.dart';
+import 'package:tuned_live/services/coordinatesToAddress.dart';
+// import 'package:tuned_live/screens/venue_container.dart';
+import 'venue_view.dart';
 
 class TunedBody extends StatefulWidget {
+
   @override
   State createState() => TunedBodyBuilder();
 }
 
 class TunedBodyBuilder extends State<TunedBody> {
   PermissionStatus _status;
-  MapType _currentMapType = MapType.normal;
   bool _showAlertPermission = true;
   Location location = new Location();
   LocationData currentUserLocation;
+  double zoomVal = 12.0;
 
   Firestore firestore = Firestore.instance;
-  Geoflutterfire geo = Geoflutterfire();
+  Geoflutterfire geo = Geoflutterfire();  
 
-  final List<String> entries = <String>['A', 'B', 'C', 'D'];
-  final List<String> distances = <String>['120', '350', '600', '810'];
-  final List<int> colorCodes = <int>[600, 500, 100, 100];
-
-  BehaviorSubject<double> radius = BehaviorSubject(seedValue: 100.0);
+  BehaviorSubject<double> radius = BehaviorSubject(seedValue: 200.0);
   Stream<dynamic> query;
 
   StreamSubscription subscription;
 
   @override
-  void initState(){
+  void initState(){ 
     super.initState();
     PermissionHandler().checkPermissionStatus(PermissionGroup.locationWhenInUse)
     .then(_updateStatus);
@@ -58,34 +56,39 @@ class TunedBodyBuilder extends State<TunedBody> {
   Widget build(BuildContext context) {
     return new Stack(
       children: [
-        GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(45.645573, -122.657433), zoom: 12.0), 
-          onMapCreated: _onMapCreated,
-          myLocationEnabled: true, // add a blue dot;
-          scrollGesturesEnabled: true,
-          tiltGesturesEnabled: true,
-          rotateGesturesEnabled: true,
-          compassEnabled: true,
-          mapType: _currentMapType,
-          markers: Set<Marker>.of(markers.values),
-        ),
-        _showAlertPermission ? _showDialog : Text(''), //Not sure if this works
-        Positioned (
-          top: 35.0,
-          child: Align (
-            alignment: Alignment.topCenter,
-            child: Slider(
-              min: 100.0,
-              max: 500.0,
-              divisions: 4,
-              value: radius.value,
-              label: 'Radius ${radius.value}km',
-              activeColor: Colors.green,
-              inactiveColor: Colors.green.withOpacity(0.2),
-              onChanged: _updateQuery,
-            ),
+        Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: LatLng(49.2827, -123.1207), zoom: 12.0, tilt: 50.0,), 
+            onMapCreated: _onMapCreated,
+            myLocationEnabled: true, // add a blue dot;
+            scrollGesturesEnabled: true,
+            tiltGesturesEnabled: true,
+            rotateGesturesEnabled: true,
+            compassEnabled: true,
+            markers: Set<Marker>.of(markers.values),
           ),
         ),
+        _showAlertPermission ? _showDialog : Text(''), //Not sure if this works
+        // Positioned (
+        //   top: 35.0,
+        //   child: Align (
+        //     alignment: Alignment.topCenter,
+        //     child: Slider(
+        //       min: 100.0,
+        //       max: 500.0,
+        //       divisions: 4,
+        //       value: radius.value,
+        //       label: 'Radius ${radius.value}km',
+        //       activeColor: Colors.green,
+        //       inactiveColor: Colors.green.withOpacity(0.2),
+        //       onChanged: _updateQuery,
+        //     ),
+        //   ),
+        // ),
+        _zoomminusfunction(),
+        _zoomplusfunction(),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Align(
@@ -93,10 +96,10 @@ class TunedBodyBuilder extends State<TunedBody> {
             child: Column(
               children: <Widget>[
                 FloatingActionButton(
-                  onPressed: _onMapTypeButtonPressed,
+                  onPressed: getLocationOnce,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   backgroundColor: new Color(0xFF151026),
-                  child: const Icon(Icons.map, size: 33.0),
+                  child: const Icon(Icons.person_outline, size: 33.0),
                 ),
                 SizedBox(height: 16.0),
                 FloatingActionButton(
@@ -110,44 +113,195 @@ class TunedBodyBuilder extends State<TunedBody> {
             ),
           ),
         ),
-        new Positioned(
-          child: Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: Container(
-              height: 250,
-              margin: EdgeInsets.all(15.0),
-              padding: EdgeInsets.all(7.0),
-              decoration: BoxDecoration(borderRadius: 
-                BorderRadius.only(
-                  topRight: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0),
-                  bottomLeft: Radius.circular(10.0), 
-                  topLeft: Radius.circular(10.0)), 
-                  color: Colors.white),
-              child: VenueContainer(),
+        new Align(
+          alignment: Alignment.bottomLeft,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            height: 140.0,
+            width: MediaQuery.of(context).size.width,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('venues').snapshots(),
+              builder: (BuildContext context, 
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return new Center(child: new CircularProgressIndicator());
+                  default:
+                    return new ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) => const Divider(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data.documents.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot ds = snapshot.data.documents[index];
+                        GeoPoint pos = ds.data['position']['geopoint'];
+                        String distance = ds.data['distance'];
+                        return new Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _boxes(pos.latitude, pos.longitude, ds['venueName'], distance, ds),
+                        );
+                      }
+                    );
+                  }
+              },
             ),
-          ),
+          )
         ),
+        // new Positioned(
+        //   child: Align(
+        //     alignment: FractionalOffset.bottomCenter,
+        //     child: Container(
+        //       height: 250,
+        //       margin: EdgeInsets.all(15.0),
+        //       padding: EdgeInsets.all(7.0),
+        //       decoration: BoxDecoration(borderRadius: 
+        //         BorderRadius.only(
+        //           topRight: Radius.circular(10.0),
+        //           bottomRight: Radius.circular(10.0),
+        //           bottomLeft: Radius.circular(10.0), 
+        //           topLeft: Radius.circular(10.0)), 
+        //           color: Colors.white),
+        //       child: VenueContainer(),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
 
+  Widget _zoomminusfunction() {
+    return Positioned(
+      top: 80,
+      left: 10,
+      child: FloatingActionButton(
+        onPressed: () {
+          zoomVal--;
+          _minus(zoomVal);
+          _updateQuery(radius.value + 50);
+        },
+        materialTapTargetSize: MaterialTapTargetSize.padded,
+        backgroundColor: new Color(0xFF151026),
+        child: const Icon(Icons.zoom_out, color: Colors.white, size: 33.0),
+      ),
+    );
+  }
+  Widget _zoomplusfunction() {
+    return Positioned(
+      top: 15,
+      left: 10,
+      child: FloatingActionButton(
+        onPressed: () {
+          zoomVal++;
+          _plus(zoomVal);
+          _updateQuery(radius.value - 50);
+        },
+        materialTapTargetSize: MaterialTapTargetSize.padded,
+        backgroundColor: new Color(0xFF151026),
+        child: const Icon(Icons.zoom_in, color: Colors.white, size: 33.0),
+      ),
+    );
+  }
+
+  Widget _boxes(double lat, double long, String venueName, String distance, DocumentSnapshot ds) {
+    return Container(
+      child: new FittedBox(
+        child: Material(
+            color: Colors.white,
+            elevation: 4.0,
+            borderRadius: BorderRadius.circular(24.0),
+            //shadowColor: Color(0x802196F3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    _gotoMarker(lat,long);
+                  },
+                  child: Container(
+                  width: 180,
+                  height: 200,
+                  child: ClipRRect(
+                    borderRadius: new BorderRadius.circular(24.0),
+                    child: Icon(
+                      Icons.play_circle_filled, size: 120.0,
+                    ),
+                  ),),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => VenueView(snapshot: ds)));
+                  },
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10.0,
+                        left: 0.0,
+                        bottom: 10.0,
+                        right: 25.0
+                      ),
+                      child: myDetailsContainer(venueName, distance),
+                    ),
+                  ),
+                ),
+              ],
+            )
+        ),
+      ),
+    );
+  }
+
+  Widget myDetailsContainer(String venueName, String distance) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Container(
+              child: Text(venueName,
+            style: TextStyle(
+                color: Color(0xff6200ee),
+                fontSize: 26.0,
+                fontWeight: FontWeight.bold),
+          )),
+        ),
+        SizedBox(height:5.0),
+        Container(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                  child: Text(
+                '$distance km',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 22.0,
+                ),
+              )),
+            ],
+          )),
+          SizedBox(height:5.0),
+        Container(
+            child: Text(
+          "Opens 17:00 Thu",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
+      ],
+    );
+  }
+  
   Future<DocumentReference> _addGeoPoint() async {
     var pos = await location.getLocation();
     GeoFirePoint point = geo.point(latitude: pos.latitude, longitude: pos.longitude);
+    Address address = await GetAddress.getAddress(LatLng(pos.latitude, pos.longitude)); //TODO: FIXTHIS
     return firestore.collection('venues').add({
       'position': point.data,
-      'venueName': 'Melkweg',
-      'emailAddress': 'melkweg@gmail.com'
+      'venueName': address.featureName.toString(),
+      'emailAddress': 'melkweg@gmail.com',
+      'address': address.addressLine.toString()
     });
-  }
-
-  void venueQuery() {
-    Firestore.instance.collection('venues').snapshots().listen((data) =>
-        data.documents.forEach((doc) {
-          print('${doc.data['venueName']}');
-          print(doc["venueName"]);
-        }));
   }
 
   void _updateMarkers(List<DocumentSnapshot> documentList){
@@ -183,9 +337,11 @@ class TunedBodyBuilder extends State<TunedBody> {
   }
 
   _startQuery() async {
+    //getLocationOnce();
     var pos = await location.getLocation();
     double lat = pos.latitude;
     double lng = pos.longitude;
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: 14, tilt: 50.0)));
     
     var ref = firestore.collection('venues');
     GeoFirePoint center = geo.point(latitude: lat, longitude: lng);
@@ -201,17 +357,6 @@ class TunedBodyBuilder extends State<TunedBody> {
   }
 
   _updateQuery(value) {
-    final zoomMap = {
-      100.0: 12.0,
-      200.0: 10.0,
-      300.0: 7.0,
-      400.0: 6.0,
-      500.0: 5.0
-    };
-
-    final zoom = zoomMap[value];
-    mapController.moveCamera(CameraUpdate.zoomTo(zoom));
-
     setState(() {
       radius.add(value);
     });
@@ -242,10 +387,20 @@ class TunedBodyBuilder extends State<TunedBody> {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    _startQuery();
     setState(() {
       mapController = controller;
     });
+    _startQuery();
+  }
+
+  Future<void> getLocationOnce() async {
+    try {
+      currentUserLocation = await location.getLocation();
+    } catch (e) {
+      print(e);
+      currentUserLocation = null;
+    }
+    _gotoLocation(currentUserLocation.latitude, currentUserLocation.longitude);
   }
 
   void _updateStatus(PermissionStatus status) {
@@ -260,7 +415,6 @@ class TunedBodyBuilder extends State<TunedBody> {
       _showAlertPermission = true;
     }
   }
-
   bool isLocationGranted() {
     if (_status == PermissionStatus.granted){
       return true;
@@ -268,12 +422,10 @@ class TunedBodyBuilder extends State<TunedBody> {
       return false;
     }
   }
-
   void _askPermission() {
     PermissionHandler().requestPermissions([PermissionGroup.locationWhenInUse])
       .then(_onStatusRequested);
   }
-
   void _onStatusRequested(Map<PermissionGroup, PermissionStatus> statuses){
     final status = statuses[PermissionGroup.locationWhenInUse];
     if (status != PermissionStatus.granted){
@@ -282,13 +434,19 @@ class TunedBodyBuilder extends State<TunedBody> {
       _updateStatus(status);
     }
   }
-  
-  void _onMapTypeButtonPressed() {
-    setState(() {
-      _currentMapType = _currentMapType == MapType.normal
-          ? MapType.satellite
-          : MapType.normal;
-    });
+  Future<void> _gotoLocation(double lat,double long) async {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: 14, tilt: 50.0)));
+  }
+  Future<void> _gotoMarker(double lat,double long) async {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: 18, tilt: 50.0)));
+  }
+  Future<void> _minus(double zoomVal) async {
+    var pos = await location.getLocation();
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal)));
+  }
+  Future<void> _plus(double zoomVal) async {
+    var pos = await location.getLocation();
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal)));
   }
 
   @override

@@ -22,6 +22,8 @@ class _LoginState extends State<LoginPage> {
       onSaved: (input) => _email = input,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.2),
           hintText: "Email",
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
@@ -32,6 +34,8 @@ class _LoginState extends State<LoginPage> {
       onSaved: (input) => _password = input,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.2),
           hintText: "Password",
           border:
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
@@ -52,10 +56,20 @@ class _LoginState extends State<LoginPage> {
     );
 
     return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Container(
+      resizeToAvoidBottomPadding: false, 
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
           color: Colors.white,
+          image: DecorationImage(
+            colorFilter: new ColorFilter.mode(
+                Colors.black.withOpacity(1.0), BlendMode.dstATop),
+            image: AssetImage("./lib/assets/login_wallpaper2.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Form(
+          key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(36.0),
             child: Column(
@@ -63,7 +77,7 @@ class _LoginState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 50.0,
+                  height: 90.0,
                   child: Image.asset(
                     "./lib/assets/image_logo.png",
                     fit: BoxFit.contain,
@@ -81,15 +95,15 @@ class _LoginState extends State<LoginPage> {
                   height: 5.0,
                 ),
                 FlatButton(
-                  child: Text('Forgot Password?', style: TextStyle(color: Colors.black54)),
-                  onPressed: () {
-                    print("Hello World!"); // Send an email password reset.
-                  },
-                ),
-                FlatButton(
                   child: Text('Don\'t have an account yet? Sign Up', style: TextStyle(color: Colors.blue[400])),
                   onPressed: () {
                     Navigator.popAndPushNamed(context, '/signUpScreen');
+                  },
+                ),
+                FlatButton(
+                  child: Text('Forgot Password?', style: TextStyle(color: Colors.black54)),
+                  onPressed: () {
+                    print("Hello World!"); // Send an email password reset.
                   },
                 ),
               ],
