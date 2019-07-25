@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tuned_live/screens/home_page.dart';
-
 import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -132,77 +131,3 @@ class _LoginState extends State<LoginPage> {
   }
 
 }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('Login Sign Up Page'),
-  //     ),
-  //     body: Form(
-  //       key: _formKey,
-  //       // Implement Key
-  //       child: Column(
-  //         children: <Widget>[
-  //           TextFormField(
-  //             keyboardType: TextInputType.emailAddress,
-  //             validator: (input) {
-  //               if(input.isEmpty){
-  //                 return "Please type an Email";
-  //               }
-  //             },
-  //             onSaved: (input) => _email = input,
-  //             decoration: InputDecoration(
-  //               hintText: 'Email',
-  //               contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(32.0)
-  //               )
-  //             ),
-  //           ),
-  //           TextFormField(
-  //             validator: (input) {
-  //               if(input.length < 6){
-  //                 return "Your password needs to be at least 6 characters";
-  //               }
-  //             },
-  //             onSaved: (input) => _password = input,
-  //             decoration: InputDecoration(
-  //               hintText: 'Password',
-  //               contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(32.0)
-  //               )
-  //             ),
-  //             obscureText: true,
-  //           ),
-  //           new Container(
-  //             width: 320.0,
-  //             height: 60.0,   
-  //             alignment: FractionalOffset.center,
-  //             decoration: new BoxDecoration(
-  //               color: const Color.fromRGBO(247, 64, 106, 1.0),
-  //               borderRadius: new BorderRadius.all(const Radius.circular(30.0)),
-  //             ),
-  //             child: new Text(
-  //               "Sign In",
-  //               style: new TextStyle(
-  //                 color: Colors.white,
-  //                 fontSize: 20.0,
-  //                 fontWeight: FontWeight.w300,
-  //                 letterSpacing: 0.3,
-  //               ),
-  //             ),
-  //           ),      
-  //           FlatButton(
-  //             child: Text('Forgot Password?', style: TextStyle(color: Colors.black54)),
-  //             onPressed: () {
-  //               print("Hello World!");
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }

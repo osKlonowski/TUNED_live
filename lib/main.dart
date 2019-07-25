@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tuned_live/screens/home_page.dart';
 import 'package:tuned_live/screens/login_page.dart';
+import 'package:tuned_live/screens/settings_page.dart';
 import 'package:tuned_live/screens/signup_page.dart';
 import 'screens/welcome_page.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
           '/signUpScreen' : (BuildContext context) => new SignUpPage(),
           '/homeScreen' : (BuildContext context) => new HomePage(),
           '/welcomeScreen' : (BuildContext context) => new WelcomePage(),
+          '/settingScreen' : (BuildContext context) => new SettingsPage(),
         },
     );
   }

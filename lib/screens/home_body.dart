@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
@@ -20,9 +19,9 @@ class TunedBody extends StatefulWidget {
 
 class TunedBodyBuilder extends State<TunedBody> {
   PermissionStatus _status;
-  bool _showAlertPermission = true;
   Location location = new Location();
   LocationData currentUserLocation;
+  bool _showAlertPermission = true;
   double zoomVal = 12.0;
 
   Firestore firestore = Firestore.instance;
@@ -70,23 +69,6 @@ class TunedBodyBuilder extends State<TunedBody> {
             markers: Set<Marker>.of(markers.values),
           ),
         ),
-        _showAlertPermission ? _showDialog : Text(''), //Not sure if this works
-        // Positioned (
-        //   top: 35.0,
-        //   child: Align (
-        //     alignment: Alignment.topCenter,
-        //     child: Slider(
-        //       min: 100.0,
-        //       max: 500.0,
-        //       divisions: 4,
-        //       value: radius.value,
-        //       label: 'Radius ${radius.value}km',
-        //       activeColor: Colors.green,
-        //       inactiveColor: Colors.green.withOpacity(0.2),
-        //       onChanged: _updateQuery,
-        //     ),
-        //   ),
-        // ),
         _zoomminusfunction(),
         _zoomplusfunction(),
         Padding(
@@ -96,6 +78,7 @@ class TunedBodyBuilder extends State<TunedBody> {
             child: Column(
               children: <Widget>[
                 FloatingActionButton(
+                  heroTag: "UserLocationBtn",
                   onPressed: getLocationOnce,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   backgroundColor: new Color(0xFF151026),
@@ -103,6 +86,7 @@ class TunedBodyBuilder extends State<TunedBody> {
                 ),
                 SizedBox(height: 16.0),
                 FloatingActionButton(
+                  heroTag: "AddGeoPointBtn",
                   onPressed: _addGeoPoint,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   backgroundColor: new Color(0xFF151026),
@@ -146,24 +130,6 @@ class TunedBodyBuilder extends State<TunedBody> {
             ),
           )
         ),
-        // new Positioned(
-        //   child: Align(
-        //     alignment: FractionalOffset.bottomCenter,
-        //     child: Container(
-        //       height: 250,
-        //       margin: EdgeInsets.all(15.0),
-        //       padding: EdgeInsets.all(7.0),
-        //       decoration: BoxDecoration(borderRadius: 
-        //         BorderRadius.only(
-        //           topRight: Radius.circular(10.0),
-        //           bottomRight: Radius.circular(10.0),
-        //           bottomLeft: Radius.circular(10.0), 
-        //           topLeft: Radius.circular(10.0)), 
-        //           color: Colors.white),
-        //       child: VenueContainer(),
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }
@@ -173,6 +139,7 @@ class TunedBodyBuilder extends State<TunedBody> {
       top: 80,
       left: 10,
       child: FloatingActionButton(
+        heroTag: "zoomOutBtn",
         onPressed: () {
           zoomVal--;
           _minus(zoomVal);
@@ -189,6 +156,7 @@ class TunedBodyBuilder extends State<TunedBody> {
       top: 15,
       left: 10,
       child: FloatingActionButton(
+        heroTag: "zoomInBtn",
         onPressed: () {
           zoomVal++;
           _plus(zoomVal);
@@ -362,29 +330,24 @@ class TunedBodyBuilder extends State<TunedBody> {
     });
   }
 
-  void _showDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Location Permission"),
-          content: new Text("This app needs location permission while you use the app"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Give Permission"),
-              onPressed: isLocationGranted() ? null : () => _askPermission,
-            ),
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Widget _showDialog() {
+  //   return AlertDialog(
+  //     title: new Text("Location Permission"),
+  //     content: new Text("This app needs location permission while you use the app"),
+  //     actions: <Widget>[
+  //       new FlatButton(
+  //         child: new Text("Give Permission"),
+  //         onPressed: isLocationGranted() ? null : () => _askPermission,
+  //       ),
+  //       new FlatButton(
+  //         child: new Text("Close"),
+  //         onPressed: () {
+  //           Navigator.of(context).pop();
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -394,6 +357,7 @@ class TunedBodyBuilder extends State<TunedBody> {
   }
 
   Future<void> getLocationOnce() async {
+    zoomVal = 12.0;
     try {
       currentUserLocation = await location.getLocation();
     } catch (e) {
@@ -415,6 +379,7 @@ class TunedBodyBuilder extends State<TunedBody> {
       _showAlertPermission = true;
     }
   }
+
   bool isLocationGranted() {
     if (_status == PermissionStatus.granted){
       return true;

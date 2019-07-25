@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tuned_live/screens/welcome_page.dart';
+import 'package:tuned_live/services/user_management.dart';
 
 import 'home_page.dart';
 //import 'home_page.dart';
@@ -13,23 +14,16 @@ class DrawerMenu extends StatefulWidget {
 
 class _DrawerState extends State<DrawerMenu> {
 
-  Future<DocumentSnapshot> getUserInfo() async {
-    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var uid = user.uid;
-    DocumentSnapshot result = await Firestore.instance.collection('users').document(uid).get();
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Drawer(
       child: new ListView(
         children: <Widget>[
           new FutureBuilder<DocumentSnapshot>(
-            future: getUserInfo(),
+            future: UserManagement.getUserInfo(),
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               switch (snapshot.connectionState) {
-                case ConnectionState.waiting: return new Text('Awaiting result...');
+                case ConnectionState.waiting: return new Center(child: new CircularProgressIndicator());
               default:
                 if (snapshot.hasError)
                   return new Text('Error: ${snapshot.error}');
@@ -50,19 +44,6 @@ class _DrawerState extends State<DrawerMenu> {
               }
             },
           ),
-          // UserAccountsDrawerHeader(
-          //   accountName: new Text('userName', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
-          //   accountEmail: new Text('userEmail'),
-          //   currentAccountPicture: new CircleAvatar(
-          //     backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
-          //   ),
-          //   decoration: new BoxDecoration(
-          //     image: new DecorationImage(
-          //       fit: BoxFit.fill,
-          //       image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
-          //     )
-          //   ),
-          // ),
           new ListTile(
             title: new Text('Home'),
             trailing: Icon(Icons.arrow_right),
@@ -81,10 +62,9 @@ class _DrawerState extends State<DrawerMenu> {
           new ListTile(
             title: new Text('Settings'),
             trailing: Icon(Icons.settings),
-            // onTap: () {
-            //   Navigator.of(context).pop;
-            //   Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SettingsPage()));
-            // },
+            onTap: () {
+              Navigator.popAndPushNamed(context, '/settingScreen');
+            },
           ),
           new ListTile(
             title: new Text('Logout'),
