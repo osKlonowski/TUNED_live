@@ -71,7 +71,9 @@ class _DrawerState extends State<DrawerMenu> {
             trailing: Icon(Icons.arrow_left),
             onTap: () {
               FirebaseAuth.instance.signOut().then((value) {
-                Navigator.popAndPushNamed(context, '/loginScreen');
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.pushNamed(context, '/loginScreen');
               }).catchError((e) {
                 print(e.message);
               });

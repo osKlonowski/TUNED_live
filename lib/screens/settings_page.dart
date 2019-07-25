@@ -28,7 +28,6 @@ class _SettingsState extends State<SettingsPage> {
                   blurRadius: 3.0,
                 ),]
               ),
-              height: MediaQuery.of(context).size.height,
               child: Card(
                 margin: EdgeInsets.all(10.0),
                 child: Column(
@@ -40,6 +39,24 @@ class _SettingsState extends State<SettingsPage> {
                         title: Text('Account Settings', style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
                         subtitle: Text('Manage information about you, your preferences and account settings.'),
                       )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                      child: SwitchListTile(
+                        activeColor: new Color(0xFF151026),
+                        value: false,
+                        title: Text("Enable Location Services"),
+                        onChanged: (value) {},
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                      child: SwitchListTile(
+                        activeColor: new Color(0xFF151026),
+                        value: false,
+                        title: Text("Enable Notifications"),
+                        onChanged: (value) {},
+                      ),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
