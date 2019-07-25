@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserManagement {
   storeNewUser(user, context, name) {
-    Firestore.instance.collection('/users').add({
+    Firestore.instance.collection('/users').document(user.uid).setData({
       'name': name,
       'email': user.email,
       'uid': user.uid

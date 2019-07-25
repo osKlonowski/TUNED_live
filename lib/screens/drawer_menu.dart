@@ -13,66 +13,56 @@ class DrawerMenu extends StatefulWidget {
 
 class _DrawerState extends State<DrawerMenu> {
 
-  // Future<QuerySnapshot> getUserInfo() async {
-  //   final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-  //   var uid = user.uid;
-  //   var query = Firestore.instance.collection('fields').where('uid', isEqualTo: uid).snapshots();
-  //   return query.first;
-  // }
-
-  // @override
-  // void initState() {
-  //   getUserInfo().then((result) {
-  //     setState(() {
-        
-  //     });
-  //   });
-  // }
+  Future<DocumentSnapshot> getUserInfo() async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentSnapshot result = await Firestore.instance.collection('users').document(uid).get();
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
     return new Drawer(
       child: new ListView(
         children: <Widget>[
-          // new FutureBuilder<QuerySnapshot>(
-          //   future: getUserInfo(),
-          //   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //     switch (snapshot.connectionState) {
-          //       case ConnectionState.waiting: return new Text('Awaiting result...');
-          //     default:
-          //       var doc = snapshot.data;
-          //       if (snapshot.hasError)
-          //         return new Text('Error: ${snapshot.error}');
-          //       else
-          //         return new UserAccountsDrawerHeader(
-          //           accountName: new Text('${doc["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
-          //           accountEmail: new Text('${doc['email']}'),
-          //           currentAccountPicture: new CircleAvatar(
-          //             backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
-          //           ),
-          //           decoration: new BoxDecoration(
-          //             image: new DecorationImage(
-          //               fit: BoxFit.fill,
-          //               image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
-          //             )
-          //           ),
-          //         );
-          //     }
-          //   },
-          // ),
-          UserAccountsDrawerHeader(
-            accountName: new Text('userName', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
-            accountEmail: new Text('userEmail'),
-            currentAccountPicture: new CircleAvatar(
-              backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
-            ),
-            decoration: new BoxDecoration(
-              image: new DecorationImage(
-                fit: BoxFit.fill,
-                image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
-              )
-            ),
+          new FutureBuilder<DocumentSnapshot>(
+            future: getUserInfo(),
+            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting: return new Text('Awaiting result...');
+              default:
+                if (snapshot.hasError)
+                  return new Text('Error: ${snapshot.error}');
+                else
+                  return new UserAccountsDrawerHeader(
+                    accountName: new Text('${snapshot.data["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
+                    accountEmail: new Text('${snapshot.data['email']}'),
+                    currentAccountPicture: new CircleAvatar(
+                      backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
+                    ),
+                    decoration: new BoxDecoration(
+                      image: new DecorationImage(
+                        fit: BoxFit.fill,
+                        image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
+                      )
+                    ),
+                  );
+              }
+            },
           ),
+          // UserAccountsDrawerHeader(
+          //   accountName: new Text('userName', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
+          //   accountEmail: new Text('userEmail'),
+          //   currentAccountPicture: new CircleAvatar(
+          //     backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
+          //   ),
+          //   decoration: new BoxDecoration(
+          //     image: new DecorationImage(
+          //       fit: BoxFit.fill,
+          //       image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
+          //     )
+          //   ),
+          // ),
           new ListTile(
             title: new Text('Home'),
             trailing: Icon(Icons.arrow_right),
