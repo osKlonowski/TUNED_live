@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tuned_live/main.dart';
-import 'login_page.dart';
-import 'signup_page.dart';
 
 class WelcomePage extends StatefulWidget {
   @override

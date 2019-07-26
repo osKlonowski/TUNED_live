@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tuned_live/screens/home_page.dart';
-import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override

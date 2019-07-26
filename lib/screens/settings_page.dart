@@ -15,6 +15,16 @@ class _SettingsState extends State<SettingsPage> {
         backgroundColor: new Color(0xFF151026),
         centerTitle: true,
         elevation: 2.0,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: new IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+              Navigator.pushNamed(context, '/loginScreen');
+            })
+          )
+        ],
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -62,7 +72,7 @@ class _SettingsState extends State<SettingsPage> {
                       contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
                       leading: Icon(Icons.person_outline, size: 32.0),
                       title: Text('Personal Information'),
-                      subtitle: Text('Update your name, and email address.'),
+                      subtitle: Text('Update your name, profile picture, and email address.'),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),

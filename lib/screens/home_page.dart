@@ -1,10 +1,9 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tuned_live/services/search.dart';
+import 'package:tuned_live/screens/venue_view.dart';
+import 'package:tuned_live/services/google_maps.dart';
 import 'drawer_menu.dart';
-import 'home_body.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -32,7 +31,161 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: new DrawerMenu(),
-      body: new TunedBody(),
+      body: new Stack(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: GoogleMapBox(),
+          ),
+          new Align(
+            alignment: Alignment.bottomLeft,
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              height: 140.0,
+              width: MediaQuery.of(context).size.width,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance.collection('venues').snapshots(),
+                builder: (BuildContext context, 
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return new Center(child: new CircularProgressIndicator());
+                    default:
+                      return new ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) => const Divider(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot ds = snapshot.data.documents[index];
+                          GeoPoint pos = ds.data['position']['geopoint'];
+                          String distance = ds.data['distance'];
+                          return new Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: _boxes(pos.latitude, pos.longitude, ds['venueName'], distance, ds),
+                          );
+                        }
+                      );
+                    }
+                },
+              ),
+            )
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _boxes(double lat, double long, String venueName, String distance, DocumentSnapshot ds) {
+    return Container(
+      child: new FittedBox(
+        child: Material(
+            color: Colors.white,
+            elevation: 4.0,
+            borderRadius: BorderRadius.circular(24.0),
+            //shadowColor: Color(0x802196F3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    // _gotoMarker(lat,long);
+                  },
+                  child: Container(
+                  width: 180,
+                  height: 200,
+                  child: ClipRRect(
+                    borderRadius: new BorderRadius.circular(24.0),
+                    child: Icon(
+                      Icons.play_circle_filled, size: 120.0,
+                    ),
+                  ),),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => VenueView(snapshot: ds)));
+                  },
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10.0,
+                        left: 0.0,
+                        bottom: 10.0,
+                        right: 25.0
+                      ),
+                      child: myDetailsContainer(venueName, distance),
+                    ),
+                  ),
+                ),
+              ],
+            )
+        ),
+      ),
+    );
+  }
+
+  Widget myDetailsContainer(String venueName, String distance) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Container(
+              child: Text(venueName,
+            style: TextStyle(
+                color: Color(0xff6200ee),
+                fontSize: 26.0,
+                fontWeight: FontWeight.bold),
+          )),
+        ),
+        SizedBox(height:5.0),
+        Container(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                  child: Text(
+                '$distance km',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 22.0,
+                ),
+              )),
+            ],
+          )),
+          SizedBox(height:5.0),
+        Container(
+            child: Text(
+          "Opens 17:00 Thu",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
+      ],
+    );
+  }
+
+
+
+
+  // Widget _showDialog() {
+  //   return AlertDialog(
+  //     title: new Text("Location Permission"),
+  //     content: new Text("This app needs location permission while you use the app"),
+  //     actions: <Widget>[
+  //       new FlatButton(
+  //         child: new Text("Give Permission"),
+  //         onPressed: isLocationGranted() ? null : () => _askPermission,
+  //       ),
+  //       new FlatButton(
+  //         child: new Text("Close"),
+  //         onPressed: () {
+  //           Navigator.of(context).pop();
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 }
