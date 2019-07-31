@@ -34,6 +34,7 @@ dependencies:
   location: 
   provider: 
   geocoder: ^0.2.1
+  geolocator:
 
   font_awesome_flutter:
 

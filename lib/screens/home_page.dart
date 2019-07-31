@@ -1,9 +1,12 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:tuned_live/screens/venue_view.dart';
 import 'package:tuned_live/services/google_maps.dart';
+import 'package:tuned_live/services/user_management.dart';
 import 'drawer_menu.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -59,10 +62,10 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data.documents[index];
                           GeoPoint pos = ds.data['position']['geopoint'];
-                          String distance = ds.data['distance'];
+                          // Future distance = UserManagement.getDistanceToVenue(pos.latitude, pos.longitude);
                           return new Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: _boxes(pos.latitude, pos.longitude, ds['venueName'], distance, ds),
+                            child: _boxes(pos.latitude, pos.longitude, ds['venueName'], ds),
                           );
                         }
                       );
@@ -76,7 +79,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _boxes(double lat, double long, String venueName, String distance, DocumentSnapshot ds) {
+  Widget _boxes(double lat, double long, String venueName, DocumentSnapshot ds) {
+    print('hello');
     return Container(
       child: new FittedBox(
         child: Material(
@@ -114,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                         bottom: 10.0,
                         right: 25.0
                       ),
-                      child: myDetailsContainer(venueName, distance),
+                      child: myDetailsContainer(venueName),
                     ),
                   ),
                 ),
@@ -125,7 +129,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget myDetailsContainer(String venueName, String distance) {
+  Widget myDetailsContainer(String venueName) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -146,7 +150,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Container(
                   child: Text(
-                '$distance km',
+                'calc km', //TODO: Calculate the real distance for each user
                 style: TextStyle(
                   color: Colors.black54,
                   fontSize: 22.0,

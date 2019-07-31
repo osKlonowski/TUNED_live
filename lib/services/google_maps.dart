@@ -26,12 +26,29 @@ class _GoogleMapState extends State<GoogleMapBox> {
   BehaviorSubject<double> radius = BehaviorSubject(seedValue: 200.0);
   Stream<dynamic> query;
   StreamSubscription subscription;
+  bool moveUserLocation = true;
 
   @override
   void initState(){ 
     super.initState();
     PermissionHandler().checkPermissionStatus(PermissionGroup.locationWhenInUse)
     .then(_updateStatus);
+    // location.onLocationChanged().listen((location) async {
+    //   if(moveUserLocation = true) {
+    //     mapController?.animateCamera(
+    //       CameraUpdate.newCameraPosition(
+    //         CameraPosition(
+    //           target: LatLng(
+    //             location.latitude,
+    //             location.longitude,
+    //           ),
+    //           zoom: zoomVal,
+    //           bearing: 50.0,
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // });
   }
 
   @override
@@ -158,7 +175,6 @@ class _GoogleMapState extends State<GoogleMapBox> {
   }
 
   Future<void> getLocationOnce() async {
-    zoomVal = 12.0;
     try {
       currentUserLocation = await location.getLocation();
     } catch (e) {
@@ -169,7 +185,8 @@ class _GoogleMapState extends State<GoogleMapBox> {
   }
 
   Future<void> _gotoLocation(double lat,double long) async {
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: 14, tilt: 50.0)));
+    zoomVal = 14.0;
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
   
   Future<void> _gotoMarker(double lat,double long) async {

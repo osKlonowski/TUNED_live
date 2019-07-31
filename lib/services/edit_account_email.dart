@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+
+class EditEmail extends StatefulWidget {
+  @override
+  _EditEmailState createState() => _EditEmailState();
+}
+
+class _EditEmailState extends State<EditEmail> {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Email'),
+        backgroundColor: new Color(0xFF151026),
+        centerTitle: true,
+        elevation: 2.0,
+      ),
+      body: Column(
+        children: <Widget>[
+          new Padding(
+            padding: EdgeInsets.fromLTRB(25.0, 35.0, 25.0, 0.0),
+            child: TextFormField(
+              decoration: InputDecoration(labelText: 'Account Email', hintText: 'Email Address'),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please enter an email';
+                } 
+                return 'Thanks';
+              },
+              onSaved: (value) {
+                // setState(() {
+                //   _name = value; //TODO: update name in Firebase
+                // });
+              },
+            ),
+          ),
+          SizedBox(height: 15.0),
+          Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(2.0),
+            color: Color(0xFF151026),
+            child: MaterialButton( 
+              minWidth: MediaQuery.of(context).size.width - 90,
+              padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              onPressed: () {},
+              child: Text("Update",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      )
+    );
+  }
+}

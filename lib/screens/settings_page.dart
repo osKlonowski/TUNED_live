@@ -68,11 +68,16 @@ class _SettingsState extends State<SettingsPage> {
                         onChanged: (value) {},
                       ),
                     ),
-                    ListTile(
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
-                      leading: Icon(Icons.person_outline, size: 32.0),
-                      title: Text('Personal Information'),
-                      subtitle: Text('Update your name, profile picture, and email address.'),
+                    GestureDetector (
+                      onTap: () {
+                        Navigator.pushNamed(context, '/personalInformation');
+                      },
+                      child: ListTile(
+                        contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
+                        leading: Icon(Icons.person_outline, size: 32.0),
+                        title: Text('Personal Information'),
+                        subtitle: Text('Update your name, profile picture, and email address.'),
+                      ),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 5.0),
