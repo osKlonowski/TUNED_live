@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.bottomLeft,
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 10.0),
-              height: 140.0,
+              height: 130.0,
               width: MediaQuery.of(context).size.width,
               child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance.collection('venues').snapshots(),
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _boxes(double lat, double long, String venueName, DocumentSnapshot ds) {
-    print('hello');
+    // UserManagement.getDistanceToVenue(pos.latitude, pos.longitude);
     return Container(
       child: new FittedBox(
         child: Material(
@@ -93,17 +93,18 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    // _gotoMarker(lat,long);
+                    // GoogleMapBox._gotoMarker(lat,long);
                   },
                   child: Container(
-                  width: 180,
-                  height: 200,
-                  child: ClipRRect(
-                    borderRadius: new BorderRadius.circular(24.0),
-                    child: Icon(
-                      Icons.play_circle_filled, size: 120.0,
+                    width: 180,
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: new BorderRadius.circular(24.0),
+                      child: Icon(
+                        Icons.play_circle_filled, size: 110.0,
+                      ),
                     ),
-                  ),),
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -170,9 +171,6 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
-
-
 
   // Widget _showDialog() {
   //   return AlertDialog(

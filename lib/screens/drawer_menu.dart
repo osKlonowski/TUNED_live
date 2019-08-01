@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tuned_live/screens/venues_list.dart';
 import 'package:tuned_live/services/user_management.dart';
 
 import 'home_page.dart';
@@ -22,7 +23,7 @@ class _DrawerState extends State<DrawerMenu> {
             future: UserManagement.getUserInfo(),
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               switch (snapshot.connectionState) {
-                case ConnectionState.waiting: return new Center(child: new CircularProgressIndicator());
+                case ConnectionState.waiting: return new Center(child: new CircularProgressIndicator(backgroundColor: Colors.blue[700],));
               default:
                 if (snapshot.hasError)
                   return new Text('Error: ${snapshot.error}');
@@ -30,14 +31,15 @@ class _DrawerState extends State<DrawerMenu> {
                   return new UserAccountsDrawerHeader(
                     accountName: new Text('${snapshot.data["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
                     accountEmail: new Text('${snapshot.data['email']}'),
-                    currentAccountPicture: new CircleAvatar(
-                      backgroundImage: new NetworkImage("https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png"),
+                    currentAccountPicture: new Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.0),
+                        color: Colors.white,
+                      ),
+                      child: Icon(Icons.person_outline, size: 45.0,),
                     ),
                     decoration: new BoxDecoration(
-                      image: new DecorationImage(
-                        fit: BoxFit.fill,
-                        image: new NetworkImage("https://static.photocdn.pt/images/articles/2017_1/iStock-545347988.jpg"),
-                      )
+                      color: Colors.blue[700],
                     ),
                   );
               }
@@ -53,10 +55,9 @@ class _DrawerState extends State<DrawerMenu> {
           new ListTile(
             title: new Text('All Venues'),
             trailing: Icon(Icons.casino),
-            // onTap: () {
-            //   Navigator.of(context).pop;
-            //   Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SettingsPage()));
-            // },
+            onTap: () {
+              Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new VenuesList()));
+            },
           ),
           new ListTile(
             title: new Text('Settings'),

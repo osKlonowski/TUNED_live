@@ -78,7 +78,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
                   onPressed: getLocationOnce,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   backgroundColor: new Color(0xFF151026),
-                  child: const Icon(Icons.person_outline, size: 33.0),
+                  child: const Icon(Icons.gps_fixed, size: 33.0),
                 ),
                 SizedBox(height: 16.0),
                 FloatingActionButton(
@@ -158,7 +158,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
           snippet: '$distance km from you.'
         ),
         onTap: () {
-          print("Hello World!"); //TODO: Show the horizontall tab of the venue.
+          _gotoMarker(pos.latitude, pos.longitude); //TODO: Show the horizontall tab of the venue.
         },
       );
 
@@ -184,34 +184,14 @@ class _GoogleMapState extends State<GoogleMapBox> {
     _gotoLocation(currentUserLocation.latitude, currentUserLocation.longitude);
   }
 
-  Future<void> _gotoLocation(double lat,double long) async {
+  void _gotoLocation(double lat, double long) {
     zoomVal = 14.0;
     mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
   
-  Future<void> _gotoMarker(double lat,double long) async {
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: 18, tilt: 50.0)));
+  void _gotoMarker(double lat, double long) {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   void _updateStatus(PermissionStatus status) {
     if (status != _status){
