@@ -16,7 +16,7 @@ class _VenueListState extends State<VenuesList> {
   //   super.initState();
   // }
 
-  String venueQuery;
+  String venueQuery = "";
 
   @override
   Widget build(BuildContext context) {

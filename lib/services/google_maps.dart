@@ -8,6 +8,7 @@ import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'coordinatesToAddress.dart';
+import 'user_management.dart';
 
 class GoogleMapBox extends StatefulWidget {
   @override
@@ -136,14 +137,17 @@ class _GoogleMapState extends State<GoogleMapBox> {
     }).listen(_updateMarkers);
   }
 
-  void _updateMarkers(List<DocumentSnapshot> documentList){
+  void _updateMarkers(List<DocumentSnapshot> documentList) {
     markers.clear();
-    documentList.forEach((DocumentSnapshot document) {
+    documentList.forEach((DocumentSnapshot document) async {
       GeoPoint pos = document.data['position']['geopoint'];
       double distance = document.data['distance'];
       String name = document.data['venueName'];
-
-      Firestore.instance.collection('venues').document(document.documentID).updateData({'distance': distance.toStringAsFixed(2)});
+      Address val = await GetAddress.getAddress(LatLng(pos.latitude, pos.longitude));
+      double far = await UserManagement.getDistanceToVenue(pos.latitude, pos.longitude);
+      far = far/1000;
+      Firestore.instance.collection('venues').document(document.documentID).updateData({'address': val.locality});
+      Firestore.instance.collection('venues').document(document.documentID).updateData({'distance': far.toStringAsFixed(2)});
 
       var markerId = MarkerId(LatLng(pos.latitude, pos.longitude).toString());
 
@@ -186,7 +190,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
 
   void _gotoLocation(double lat, double long) {
     zoomVal = 14.0;
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
+    mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
   
   void _gotoMarker(double lat, double long) {

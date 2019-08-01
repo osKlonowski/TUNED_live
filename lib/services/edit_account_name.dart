@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tuned_live/services/user_management.dart';
 
 class EditName extends StatefulWidget {
   @override
@@ -6,6 +9,8 @@ class EditName extends StatefulWidget {
 }
 
 class _EditNameState extends State<EditName> {
+  String _name;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -28,9 +33,9 @@ class _EditNameState extends State<EditName> {
                 return 'Thanks';
               },
               onSaved: (value) {
-                // setState(() {
-                //   _name = value; //TODO: update name in Firebase
-                // });
+                setState(() {
+                  _name = value;
+                });
               },
             ),
           ),
@@ -42,7 +47,9 @@ class _EditNameState extends State<EditName> {
             child: MaterialButton( 
               minWidth: MediaQuery.of(context).size.width - 90,
               padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-              onPressed: () {},
+              onPressed: () {
+                //Firestore.instance.collection('users').document(uid).updateData({'name': _name}); 
+              },
               child: Text("Update",
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),

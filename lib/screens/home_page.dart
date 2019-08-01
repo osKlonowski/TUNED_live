@@ -55,14 +55,12 @@ class _HomePageState extends State<HomePage> {
                     case ConnectionState.waiting:
                       return new Center(child: new CircularProgressIndicator());
                     default:
-                      return new ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) => const Divider(),
+                      return new ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: snapshot.data.documents.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data.documents[index];
                           GeoPoint pos = ds.data['position']['geopoint'];
-                          // Future distance = UserManagement.getDistanceToVenue(pos.latitude, pos.longitude);
                           return new Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: _boxes(pos.latitude, pos.longitude, ds['venueName'], ds),
@@ -81,6 +79,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _boxes(double lat, double long, String venueName, DocumentSnapshot ds) {
     // UserManagement.getDistanceToVenue(pos.latitude, pos.longitude);
+    String distance = ds.data['distance'];
+    String address = ds.data['address'];
     return Container(
       child: new FittedBox(
         child: Material(
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                         bottom: 10.0,
                         right: 25.0
                       ),
-                      child: myDetailsContainer(venueName),
+                      child: myDetailsContainer(venueName, address, distance),
                     ),
                   ),
                 ),
@@ -130,7 +130,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget myDetailsContainer(String venueName) {
+  Widget myDetailsContainer(String venueName, String address, String distance) {
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -151,7 +152,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Container(
                   child: Text(
-                'calc km', //TODO: Calculate the real distance for each user
+                '$address', //TODO: Calculate the real distance for each user
                 style: TextStyle(
                   color: Colors.black54,
                   fontSize: 22.0,
@@ -162,10 +163,10 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height:5.0),
         Container(
             child: Text(
-          "Opens 17:00 Thu",
+          "$distance km",
           style: TextStyle(
               color: Colors.black54,
-              fontSize: 18.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold),
         )),
       ],
