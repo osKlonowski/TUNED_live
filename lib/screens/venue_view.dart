@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'music_tab.dart';
+
 class VenueView extends StatefulWidget {
   DocumentSnapshot snapshot;
   VenueView({Key key, @required this.snapshot}) : super(key: key);
@@ -86,10 +88,9 @@ class _VenueViewState extends State<VenueView> {
                       ),
                     ],
                   ),
-
                   Container(
                     margin: EdgeInsets.only(top: 10),
-                    height: MediaQuery.of(context).size.height*2,
+                    height: MediaQuery.of(context).size.height,
                     child: TabBarView(
                       children: <Widget>[
                         musicTab(),
@@ -110,9 +111,17 @@ class _VenueViewState extends State<VenueView> {
   Widget musicTab() {
     return ListView(
       children: <Widget>[
-        ListTile(
-          title: Text("Yey, Venue Music"),
-        )
+        Card(
+          child: Container(
+            margin: EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(5.0),
+            width: MediaQuery.of(context).size.width-20,
+            child: GestureDetector(
+              onTap: () {},
+              child: Icon(Icons.play_circle_filled, size: 45.0),
+            ),
+          )
+        ),
       ],
     );
   }
@@ -120,38 +129,37 @@ class _VenueViewState extends State<VenueView> {
   Widget overviewTab() {
     return ListView(
       children: <Widget>[
-        Card(
-          child: new Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  new Container(
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    height: 160,
-                    width: 380,
-                    decoration: BoxDecoration(
-                      boxShadow: [new BoxShadow(
-                        color: Colors.black38,
-                        blurRadius: 5.0,
-                      ),]
-                    ),
-                    child: GoogleMap(
-                      initialCameraPosition: CameraPosition(target: LatLng(45.645573, -122.657433), zoom: 16.0, tilt: 50.0), 
-                      onMapCreated: _onMapCreated,
-                      myLocationEnabled: false, // add a blue dot;
-                      scrollGesturesEnabled: true,
-                      tiltGesturesEnabled: true,
-                      rotateGesturesEnabled: true,
-                      compassEnabled: true,
-                      mapType: MapType.satellite,
-                      markers: {markerVenue},
-                    ),
-                  ),
-
-                ],
-              ),
-            ],
+        Container(
+          margin: EdgeInsets.only(bottom: 10.0),
+          height: 160,
+          width: MediaQuery.of(context).size.width-10,
+          decoration: BoxDecoration(
+            boxShadow: [new BoxShadow(
+              color: Colors.black38,
+              blurRadius: 5.0,
+            ),]
           ),
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: LatLng(45.645573, -122.657433), zoom: 16.0, tilt: 0.0), 
+            onMapCreated: _onMapCreated,
+            myLocationEnabled: false, // add a blue dot;
+            scrollGesturesEnabled: false,
+            tiltGesturesEnabled: false,
+            rotateGesturesEnabled: false,
+            compassEnabled: false,
+            mapType: MapType.normal,
+            markers: {markerVenue},
+          ),
+        ),
+        Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text('Something'),
+                Text('Something'),
+              ],
+            ),
+          ],
         ),
       ],
     );
@@ -169,16 +177,6 @@ class _VenueViewState extends State<VenueView> {
                 title: Text('Firstname Lastname'),
                 subtitle: Text('06/07/2017 - New York City'),
               ),
-              // ButtonTheme.bar( // make buttons use the appropriate styles for cards
-              //   child: ButtonBar(
-              //     children: <Widget>[
-              //       FlatButton(
-              //         child: const Text('BUY TICKETS'),
-              //         onPressed: () { /* ... */ },
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),

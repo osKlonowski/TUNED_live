@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tuned_live/screens/home_page.dart';
-import 'package:tuned_live/screens/login_page.dart';
 import 'package:tuned_live/screens/settings_page.dart';
 import 'package:tuned_live/screens/signup_page.dart';
 import 'package:tuned_live/services/edit_account_email.dart';
@@ -55,7 +54,6 @@ class MyApp extends StatelessWidget {
           }
         ),
         routes: <String, WidgetBuilder> {
-          '/loginScreen': (BuildContext context) => new LoginPage(),
           '/signUpScreen' : (BuildContext context) => new SignUpPage(),
           '/homeScreen' : (BuildContext context) => new HomePage(),
           '/welcomeScreen' : (BuildContext context) => new WelcomePage(),

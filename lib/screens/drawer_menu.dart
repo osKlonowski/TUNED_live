@@ -29,8 +29,8 @@ class _DrawerState extends State<DrawerMenu> {
                   return new Text('Error: ${snapshot.error}');
                 else
                   return new UserAccountsDrawerHeader(
-                    accountName: new Text('${snapshot.data["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)),
-                    accountEmail: new Text('${snapshot.data['email']}'),
+                    accountName: new Text('${snapshot.data["name"]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23.0)), 
+                    accountEmail: new Text('${snapshot.data['email']}'), 
                     currentAccountPicture: new Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
@@ -73,7 +73,7 @@ class _DrawerState extends State<DrawerMenu> {
               FirebaseAuth.instance.signOut().then((value) {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/loginScreen');
+                Navigator.pushNamed(context, '/welcomeScreen');
               }).catchError((e) {
                 print(e.message);
               });

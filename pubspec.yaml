@@ -35,6 +35,8 @@ dependencies:
   provider: 
   geocoder: ^0.2.1
   geolocator:
+  fluttery_seekbar:
+  sliding_up_panel:
 
   font_awesome_flutter:
 
@@ -69,6 +71,7 @@ flutter:
    - lib/assets/image_logo.png
    - lib/assets/login_wallapaper.jpg
    - lib/assets/login_wallpaper2.png
+   - lib/assets/welcome_wallpaper-01.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
