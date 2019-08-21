@@ -1,12 +1,9 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
 import 'package:tuned_live/screens/venue_view.dart';
 import 'package:tuned_live/services/google_maps.dart';
-import 'package:tuned_live/services/user_management.dart';
 import 'drawer_menu.dart';
-import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
 

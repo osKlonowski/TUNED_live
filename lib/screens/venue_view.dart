@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'music_tab.dart';
-
 class VenueView extends StatefulWidget {
   DocumentSnapshot snapshot;
   VenueView({Key key, @required this.snapshot}) : super(key: key);

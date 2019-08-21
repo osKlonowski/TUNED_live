@@ -96,20 +96,6 @@ class _SettingsState extends State<SettingsPage> {
                         title: Text('Apps and Websites'),
                         subtitle: Text('Manage the information your share with other apps and users.'),
                       ),
-                      // ButtonTheme.bar( // make buttons use the appropriate styles for cards
-                      //   child: ButtonBar(
-                      //     children: <Widget>[
-                      //       FlatButton(
-                      //         child: const Text('BUY TICKETS'),
-                      //         onPressed: () { /* ... */ },
-                      //       ),
-                      //       FlatButton(
-                      //         child: const Text('LISTEN'),
-                      //         onPressed: () { /* ... */ },
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

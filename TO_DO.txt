@@ -1,0 +1,11 @@
+TODO:
+- Figure out how the bullshit radius works.
+- Make sure that the zoom_in/out don't fuck with the radius
+- Fix the shit _startQuery func to work once the user location is set
+- Think about unnecessary bullshit Splash Screens
+- How do you control the (GoogleMap controller) from another screen (pass the value) // For _gotoMarker functionality
+- Fix the (bearing/tilt) bullshit
+- Figure out the StreamBuilder sort bullshit
+- Figure out listView search functionality 
+- Build the music player once everything else works
+- Fix the bullshit search func streambuilder!!!

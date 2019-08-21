@@ -36,7 +36,7 @@ class _DrawerState extends State<DrawerMenu> {
                         borderRadius: BorderRadius.circular(50.0),
                         color: Colors.white,
                       ),
-                      child: Icon(Icons.person_outline, size: 45.0,),
+                      child: Icon(Icons.person_outline, size: 42.0,),
                     ),
                     decoration: new BoxDecoration(
                       color: Colors.blue[700],

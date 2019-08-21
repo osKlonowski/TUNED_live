@@ -42,7 +42,7 @@ class _WelcomeState extends State<WelcomePage> {
             ),
             collapsed: Container(
               decoration: BoxDecoration(
-                color: Colors.blueGrey[800],
+                color: Colors.redAccent,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24.0),
                   topRight: Radius.circular(24.0),

@@ -10,6 +10,8 @@ import 'package:rxdart/rxdart.dart';
 import 'coordinatesToAddress.dart';
 import 'user_management.dart';
 
+//45.6216 -122.678
+
 class GoogleMapBox extends StatefulWidget {
   @override
   _GoogleMapState createState() => _GoogleMapState();
@@ -21,19 +23,21 @@ class _GoogleMapState extends State<GoogleMapBox> {
   PermissionStatus _status;
   Location location = new Location();
   LocationData currentUserLocation;
-  double zoomVal = 12.0;
+  double zoomVal = 14.0;
   Firestore firestore = Firestore.instance;
   Geoflutterfire geo = Geoflutterfire();  
-  BehaviorSubject<double> radius = BehaviorSubject(seedValue: 200.0);
-  Stream<dynamic> query;
+  BehaviorSubject<double> radius = BehaviorSubject(seedValue: 400.0); //TODO: Adjust this value to account for number of venues guerried in the area.
+  Stream<dynamic> query; 
   StreamSubscription subscription;
   bool moveUserLocation = true;
+  var venues;
 
   @override
   void initState(){ 
     super.initState();
     PermissionHandler().checkPermissionStatus(PermissionGroup.locationWhenInUse)
     .then(_updateStatus);
+    // ! This constantly updates User Position...
     // location.onLocationChanged().listen((location) async {
     //   if(moveUserLocation = true) {
     //     mapController?.animateCamera(
@@ -44,7 +48,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
     //             location.longitude,
     //           ),
     //           zoom: zoomVal,
-    //           bearing: 50.0,
+    //           tilt: 50.0,
     //         ),
     //       ),
     //     );
@@ -57,7 +61,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
     return Stack(
       children: <Widget>[
         GoogleMap(
-          initialCameraPosition: CameraPosition(target: LatLng(49.2827, -123.1207), zoom: 12.0, tilt: 50.0,), 
+          initialCameraPosition: CameraPosition(target: LatLng(52.3241925, 20.8934305), zoom: 12.0, tilt: 50.0,), //! 49.2827, -123.1207
           onMapCreated: _onMapCreated,
           myLocationEnabled: true, // add a blue dot;
           scrollGesturesEnabled: true,
@@ -66,30 +70,71 @@ class _GoogleMapState extends State<GoogleMapBox> {
           compassEnabled: true,
           markers: Set<Marker>.of(markers.values),
         ),
-        _zoomminusfunction(),
-        _zoomplusfunction(),
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Align(
             alignment: Alignment.topRight,
             child: Column(
               children: <Widget>[
-                FloatingActionButton(
-                  heroTag: "UserLocationBtn",
+                Container(
+                  width: 45.0,
+                  height: 45.0,
+                  child: new RawMaterialButton(
+                    fillColor: Color(0xFF151026),
+                    shape: new CircleBorder(),
+                    elevation: 2.0,
+                    child: new Icon(
+                      Icons.gps_fixed,
+                      color: Colors.white,
+                    ),
                   onPressed: getLocationOnce,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  backgroundColor: new Color(0xFF151026),
-                  child: const Icon(Icons.gps_fixed, size: 33.0),
-                ),
-                SizedBox(height: 16.0),
-                FloatingActionButton(
-                  heroTag: "AddGeoPointBtn",
-                  onPressed: _addGeoPoint,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  backgroundColor: new Color(0xFF151026),
-                  child: const Icon(Icons.add_location, size: 33.0),
-                ),
-                SizedBox(height: 16.0),
+                )),
+                SizedBox(height: 10.0),
+                Container(
+                  width: 45.0,
+                  height: 45.0,
+                  child: new RawMaterialButton(
+                    fillColor: Color(0xFF151026),
+                    shape: new CircleBorder(),
+                    elevation: 2.0,
+                    child: new Icon(
+                      Icons.zoom_in,
+                      color: Colors.white,
+                      size: 28.0,
+                    ),
+                  onPressed: () {
+                    zoomVal++;
+                    _plus(zoomVal);
+                    _updateQuery(radius.value); // ? Zoom change, increase or decrease radius value
+                  },
+                )),
+                SizedBox(height: 10.0),
+                Container(
+                  width: 45.0,
+                  height: 45.0,
+                  child: new RawMaterialButton(
+                    fillColor: Color(0xFF151026),
+                    shape: new CircleBorder(),
+                    elevation: 2.0,
+                    child: new Icon(
+                      Icons.zoom_out,
+                      color: Colors.white,
+                      size: 28.0,
+                    ),
+                  onPressed: () {
+                    zoomVal--;
+                    _minus(zoomVal);
+                    _updateQuery(radius.value); // ? Zoom change, increase or decrease radius value
+                  },
+                )),
+                // ! This button is unneccessary in the future. It's goona be on the website.
+                // FloatingActionButton(
+                //   heroTag: "AddGeoPointBtn",
+                //   onPressed: _addGeoPoint,
+                //   materialTapTargetSize: MaterialTapTargetSize.padded,
+                //   backgroundColor: new Color(0xFF151026),
+                //   child: const Icon(Icons.add_location, size: 33.0),
+                // ),
               ],
             ),
           ),
@@ -105,24 +150,24 @@ class _GoogleMapState extends State<GoogleMapBox> {
     _startQuery();
   }
 
-  Future<DocumentReference> _addGeoPoint() async {
-    var pos = await location.getLocation();
-    GeoFirePoint point = geo.point(latitude: pos.latitude, longitude: pos.longitude);
-    Address address = await GetAddress.getAddress(LatLng(pos.latitude, pos.longitude)); //TODO: FIXTHIS
-    return firestore.collection('venues').add({
-      'position': point.data,
-      'venueName': address.featureName.toString(),
-      'emailAddress': 'melkweg@gmail.com',
-      'address': address.addressLine.toString()
-    });
-  }
+  // ! This function adds GeoPoint of the venue, put on site.
+  // Future<DocumentReference> _addGeoPoint() async {
+  //   var pos = await location.getLocation();
+  //   GeoFirePoint point = geo.point(latitude: pos.latitude, longitude: pos.longitude);
+  //   Address address = await GetAddress.getAddress(LatLng(pos.latitude, pos.longitude)); //TODO: FIXTHIS
+  //   return firestore.collection('venues').add({
+  //     'position': point.data,
+  //     'venueName': address.featureName.toString(), 
+  //     'emailAddress': 'melkweg@gmail.com',
+  //     'address': address.addressLine.toString()
+  //   });
+  // }
 
   _startQuery() async {
-    //getLocationOnce();
     var pos = await location.getLocation();
     double lat = pos.latitude;
     double lng = pos.longitude;
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: 14, tilt: 50.0)));
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, lng), zoom: zoomVal, tilt: 50.0)));
     
     var ref = Firestore.instance.collection('venues');
     GeoFirePoint center = geo.point(latitude: lat, longitude: lng);
@@ -134,7 +179,7 @@ class _GoogleMapState extends State<GoogleMapBox> {
         field: 'position',
         strictMode: true,
       );
-    }).listen(_updateMarkers);
+    }).listen(_updateMarkers); 
   }
 
   void _updateMarkers(List<DocumentSnapshot> documentList) {
@@ -176,11 +221,14 @@ class _GoogleMapState extends State<GoogleMapBox> {
     setState(() {
       radius.add(value);
     });
-  }
+  } // * This updates the radius value after zoom change, doesn't reload the venues.
 
   Future<void> getLocationOnce() async {
     try {
       currentUserLocation = await location.getLocation();
+      print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      print(currentUserLocation.latitude);
+      print(currentUserLocation.longitude);
     } catch (e) {
       print(e);
       currentUserLocation = null;
@@ -190,10 +238,11 @@ class _GoogleMapState extends State<GoogleMapBox> {
 
   void _gotoLocation(double lat, double long) {
     zoomVal = 14.0;
-    mapController.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
   
   void _gotoMarker(double lat, double long) {
+    //var currZoom = mapController.cameraPosition().zoom; // ? FIX THIS
     mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(lat, long), zoom: zoomVal, tilt: 50.0)));
   }
 
@@ -205,71 +254,13 @@ class _GoogleMapState extends State<GoogleMapBox> {
     }
   }
 
-  bool isLocationGranted() {
-    if (_status == PermissionStatus.granted){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void _askPermission() {
-    PermissionHandler().requestPermissions([PermissionGroup.locationWhenInUse])
-      .then(_onStatusRequested);
-  }
-
-  void _onStatusRequested(Map<PermissionGroup, PermissionStatus> statuses){
-    final status = statuses[PermissionGroup.locationWhenInUse];
-    if (status != PermissionStatus.granted){
-      PermissionHandler().openAppSettings();
-    } else {
-      _updateStatus(status);
-    }
-  }
-
-  Widget _zoomminusfunction() {
-    return Positioned(
-      top: 80,
-      left: 10,
-      child: FloatingActionButton(
-        heroTag: "zoomOutBtn",
-        onPressed: () {
-          zoomVal--;
-          _minus(zoomVal);
-          //_updateQuery(radius.value + 50);
-        },
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        backgroundColor: new Color(0xFF151026),
-        child: const Icon(Icons.zoom_out, color: Colors.white, size: 33.0),
-      ),
-    );
-  }
-
-  Widget _zoomplusfunction() {
-    return Positioned(
-      top: 15,
-      left: 10,
-      child: FloatingActionButton(
-        heroTag: "zoomInBtn",
-        onPressed: () {
-          zoomVal++;
-          _plus(zoomVal);
-          //_updateQuery(radius.value - 50);
-        },
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        backgroundColor: new Color(0xFF151026),
-        child: const Icon(Icons.zoom_in, color: Colors.white, size: 33.0),
-      ),
-    );
-  }
-
   Future<void> _minus(double zoomVal) async {
     var pos = await location.getLocation();
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal)));
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal, tilt:50.0)));
   }
   Future<void> _plus(double zoomVal) async {
     var pos = await location.getLocation();
-    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal)));
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: zoomVal, tilt:50.0)));
   }
 
   @override
@@ -279,3 +270,30 @@ class _GoogleMapState extends State<GoogleMapBox> {
   }
 
 }
+
+
+
+
+
+
+  // bool isLocationGranted() {
+  //   if (_status == PermissionStatus.granted){
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  // void _askPermission() {
+  //   PermissionHandler().requestPermissions([PermissionGroup.locationWhenInUse])
+  //     .then(_onStatusRequested);
+  // }
+
+  // void _onStatusRequested(Map<PermissionGroup, PermissionStatus> statuses){
+  //   final status = statuses[PermissionGroup.locationWhenInUse];
+  //   if (status != PermissionStatus.granted){
+  //     PermissionHandler().openAppSettings();
+  //   } else {
+  //     _updateStatus(status);
+  //   }
+  // }

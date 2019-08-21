@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'venue_view.dart';
-
 class VenuesList extends StatefulWidget {
   @override
   _VenueListState createState() => _VenueListState();
